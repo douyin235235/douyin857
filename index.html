@@ -2,25 +2,95 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>打开小程序</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #f5f5f5; }
-        .btn { display: block; width: 80%; max-width: 320px; padding: 16px; margin-bottom: 20px; text-align: center; font-size: 17px; color: #fff; background: #07c160; border: none; border-radius: 8px; cursor: pointer; }
-        .btn:active { background: #06ad56; }
-        .info { font-size: 13px; color: #888; text-align: center; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .qrcode-box {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+        }
+        .qrcode-img {
+            display: block;
+            width: 280px;
+            max-width: 80vw;
+            height: auto;
+        }
+        .btn {
+            display: block;
+            width: 280px;
+            max-width: 80vw;
+            padding: 16px 0;
+            text-align: center;
+            font-size: 17px;
+            font-weight: 600;
+            color: #fff;
+            background-color: #07c160;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.2s;
+        }
+        .btn:active {
+            background-color: #06ad56;
+        }
+        .hint {
+            margin-top: 16px;
+            font-size: 13px;
+            color: #888;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
+
+    <!-- 二维码图片展示区 -->
+    <div class="qrcode-box">
+        <img class="qrcode-img" 
+             src="https://i.postimg.cc/bJNn9WhB/qrcode-wx6b6c1b15ec6acb4e-customer-21891.jpg" 
+             alt="小程序码">
+    </div>
+
+    <!-- 跳转按钮 -->
     <button class="btn" onclick="openMiniProgram()">点击打开小程序</button>
-    <p class="info">打开微信后，会自动跳转到小程序页面</p>
+
+    <!-- 提示文字 -->
+    <p class="hint">打开微信后，会自动跳转到小程序页面</p>
 
     <script>
         function openMiniProgram() {
-            // 把 appid 换成你截图里的那个
+            // 这里使用你提供的 AppID，path 为小程序首页路径
             var scheme = "weixin://dl/business/?appid=wxcc866a20987fe1ca&path=pages/index/index";
+            
+            // 触发跳转
             window.location.href = scheme;
+
+            // 兜底提示：如果 2 秒后页面还没被切走，说明跳转被拦截了
+            setTimeout(function() {
+                if (!document.hidden) {
+                    alert("跳转失败，请尝试：\n1. 使用手机自带浏览器打开本页\n2. 或直接长按上方二维码保存，再打开微信扫一扫从相册识别");
+                }
+            }, 2000);
         }
     </script>
+
 </body>
 </html>
