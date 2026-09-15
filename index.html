@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>阿韬备忘工具助手</title>
+    <title>小叶助手</title>
     <style>
         * {
             box-sizing: border-box;
@@ -12,7 +12,7 @@
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
-            background-color: #f5f5f5;
+            background-color: #ffffff;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -20,88 +20,135 @@
             min-height: 100vh;
             padding: 20px;
         }
-        /* 二维码白底小卡片 */
-        .qrcode-box {
-            background: #fff;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        
+        /* 头像/图标 */
+        .avatar-box {
+            margin-top: 40px;
+            margin-bottom: 20px;
         }
-        .qrcode-img {
+        .avatar-img {
             display: block;
-            width: 160px;  /* 缩小图片尺寸 */
-            height: auto;
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 16px; /* 圆角矩形 */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-        /* 红色标题 */
+
+        /* 标题 */
         .title {
             font-size: 22px;
-            font-weight: bold;
-            color: #e60012;
-            margin-bottom: 40px;
-            letter-spacing: 1px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
         }
-        /* 绿色按钮 */
+
+        /* 小程序标签 */
+        .subtitle {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #b0b0b0;
+            margin-bottom: 60px;
+        }
+        .subtitle svg {
+            width: 16px;
+            height: 16px;
+            margin-right: 4px;
+            fill: #b0b0b0;
+        }
+
+        /* 蓝色按钮 */
         .btn {
             display: block;
             width: 280px;
             max-width: 80vw;
-            padding: 16px 0;
+            padding: 14px 0;
             text-align: center;
             font-size: 17px;
-            font-weight: 600;
-            color: #fff;
-            background-color: #07c160;
+            font-weight: 500;
+            color: #ffffff;
+            background-color: #1989fa;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
-            transition: background-color 0.2s;
+            transition: opacity 0.2s;
         }
         .btn:active {
-            background-color: #06ad56;
+            opacity: 0.85;
         }
+
         /* 底部提示文字 */
         .hint {
-            margin-top: 16px;
+            margin-top: 24px;
             font-size: 13px;
             color: #999;
             text-align: center;
+            line-height: 1.6;
+        }
+        .hint a {
+            color: #999;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
 
-    <!-- 二维码小图 -->
-    <div class="qrcode-box">
-        <img class="qrcode-img" 
-             src="https://i.postimg.cc/bJNn9WhB/qrcode-wx6b6c1b15ec6acb4e-customer-21891.jpg" 
-             alt="小程序码">
+    <!-- 顶部图片 -->
+    <div class="avatar-box">
+        <img class="avatar-img" 
+             src="https://i.postimg.cc/J7BTDY1K/photo-2026-06-09-20-07-27.jpg" 
+             alt="小叶助手">
     </div>
 
-    <!-- 红色标题 -->
-    <div class="title">阿韬备忘工具助手</div>
+    <!-- 标题 -->
+    <div class="title">小叶助手</div>
 
-    <!-- 绿色跳转按钮 -->
-    <button class="btn" onclick="openMiniProgram()">点击打开小程序</button>
+    <!-- 小程序副标题 + 图标 -->
+    <div class="subtitle">
+        <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+            <path d="M689.064 398.624c-10.24 0-18.56 8.32-18.56 18.56v223.168c0 12.8-10.4 23.232-23.232 23.232H168.608c-12.8 0-23.232-10.432-23.232-23.232V328.384c0-12.8 10.432-23.232 23.232-23.232h365.28c10.24 0 18.56-8.32 18.56-18.56v-38.4c0-10.24-8.32-18.56-18.56-18.56H168.608C105.28 229.632 54.4 280.512 54.4 343.808v291.904c0 63.296 50.88 114.176 114.176 114.176h478.72c63.296 0 114.176-50.88 114.176-114.176V417.184c0-10.24-8.32-18.56-18.56-18.56h-53.856z"></path>
+            <path d="M932.192 303.36h-267.2c-10.24 0-18.56 8.32-18.56 18.56v38.4c0 10.24 8.32 18.56 18.56 18.56h267.2c12.8 0 23.232 10.432 23.232 23.232v223.168c0 12.8-10.432 23.232-23.232 23.232H791.424c-10.24 0-18.56 8.32-18.56 18.56v38.4c0 10.24 8.32 18.56 18.56 18.56h140.768c63.296 0 114.176-50.88 114.176-114.176V417.536c0-63.296-50.88-114.176-114.176-114.176z"></path>
+            <path d="M639.744 654.368H297.312c-10.24 0-18.56-8.32-18.56-18.56v-38.4c0-10.24 8.32-18.56 18.56-18.56h342.432c10.24 0 18.56 8.32 18.56 18.56v38.4c0 10.24-8.32 18.56-18.56 18.56z"></path>
+        </svg>
+        <span>小程序</span>
+    </div>
+
+    <!-- 蓝色按钮 -->
+    <button class="btn" onclick="openMiniProgram()">前往微信打开</button>
 
     <!-- 底部提示 -->
-    <p class="hint">打开微信后，会自动跳转到小程序页面</p>
+    <p class="hint">
+        无法打开时，可使用默认浏览器打开。<br>
+        <a href="javascript:void(0)" onclick="copyLink()">复制链接</a>
+    </p>
 
     <script>
         function openMiniProgram() {
-            // 使用你提供的 AppID
             var scheme = "weixin://dl/business/?appid=wxcc866a20987fe1ca&path=pages/index/index";
-            
-            // 触发跳转
             window.location.href = scheme;
 
             // 兜底提示
             setTimeout(function() {
                 if (!document.hidden) {
-                    alert("跳转失败，请尝试：\n1. 使用手机自带浏览器打开本页\n2. 接长按上方二维码保存，再打开微信扫一扫从相册识别");
+                    alert("跳转失败，请尝试：\n1. 使用手机自带浏览器打开本页\n2. 或直接长按上方二维码保存，再打开微信扫一扫从相册识别");
                 }
             }, 2000);
+        }
+
+        function copyLink() {
+            var url = window.location.href;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(url).then(function() {
+                    alert("链接已复制，可粘贴到微信中打开");
+                }, function() {
+                    prompt("复制失败，请手动复制：", url);
+                });
+            } else {
+                prompt("请手动复制以下链接：", url);
+            }
         }
     </script>
 
