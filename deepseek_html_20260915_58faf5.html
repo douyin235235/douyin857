@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>打开小程序</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #f5f5f5; }
+        .btn { display: block; width: 80%; max-width: 320px; padding: 16px; margin-bottom: 20px; text-align: center; font-size: 17px; color: #fff; background: #07c160; border: none; border-radius: 8px; cursor: pointer; }
+        .btn:active { background: #06ad56; }
+        .info { font-size: 13px; color: #888; text-align: center; }
+    </style>
+</head>
+<body>
+    <button class="btn" onclick="openMiniProgram()">点击打开小程序</button>
+    <p class="info">打开微信后，会自动跳转到小程序页面</p>
+
+    <script>
+        function openMiniProgram() {
+            // 把 appid 换成你截图里的那个
+            var scheme = "weixin://dl/business/?appid=wxcc866a20987fe1ca&path=pages/index/index";
+            window.location.href = scheme;
+        }
+    </script>
+</body>
+</html>
