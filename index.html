@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>小叶助手</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
             background-color: #ffffff;
@@ -16,15 +20,22 @@
             min-height: 100vh;
             padding: 20px;
         }
-        .avatar-box { margin-top: 40px; margin-bottom: 20px; }
+        
+        /* 头像/图标 */
+        .avatar-box {
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
         .avatar-img {
             display: block;
             width: 100px;
             height: 100px;
             object-fit: cover;
-            border-radius: 16px;
+            border-radius: 16px; /* 圆角矩形 */
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
+
+        /* 标题 */
         .title {
             font-size: 22px;
             font-weight: 500;
@@ -32,6 +43,8 @@
             margin-bottom: 8px;
             letter-spacing: 0.5px;
         }
+
+        /* 小程序标签 */
         .subtitle {
             display: flex;
             align-items: center;
@@ -39,7 +52,14 @@
             color: #b0b0b0;
             margin-bottom: 60px;
         }
-        .subtitle svg { width: 16px; height: 16px; margin-right: 4px; fill: #b0b0b0; }
+        .subtitle svg {
+            width: 16px;
+            height: 16px;
+            margin-right: 4px;
+            fill: #b0b0b0;
+        }
+
+        /* 蓝色按钮 */
         .btn {
             display: block;
             width: 280px;
@@ -56,7 +76,11 @@
             -webkit-tap-highlight-color: transparent;
             transition: opacity 0.2s;
         }
-        .btn:active { opacity: 0.85; }
+        .btn:active {
+            opacity: 0.85;
+        }
+
+        /* 底部提示文字 */
         .hint {
             margin-top: 24px;
             font-size: 13px;
@@ -64,41 +88,27 @@
             text-align: center;
             line-height: 1.6;
         }
-        .hint a { color: #999; text-decoration: none; }
-        
-        /* 电脑端专用样式 */
-        .pc-tip {
-            display: none;
-            margin-top: 20px;
-            font-size: 14px;
-            color: #666;
-            text-align: center;
-            line-height: 1.8;
-            background: #f9f9f9;
-            padding: 16px 20px;
-            border-radius: 8px;
-            width: 280px;
-            max-width: 80vw;
-        }
-        .pc-tip code {
-            background: #eee;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 13px;
-            word-break: break-all;
+        .hint a {
+            color: #999;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
 
+    <!-- 顶部图片 -->
     <div class="avatar-box">
-        <img class="avatar-img" src="https://i.postimg.cc/J7BTDY1K/photo-2026-06-09-20-07-27.jpg" alt="小叶助手">
+        <img class="avatar-img" 
+             src="https://i.postimg.cc/J7BTDY1K/photo-2026-06-09-20-07-27.jpg" 
+             alt="小叶助手">
     </div>
 
+    <!-- 标题 -->
     <div class="title">小叶助手</div>
 
+    <!-- 小程序副标题 + 图标 -->
     <div class="subtitle">
-        <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
             <path d="M689.064 398.624c-10.24 0-18.56 8.32-18.56 18.56v223.168c0 12.8-10.4 23.232-23.232 23.232H168.608c-12.8 0-23.232-10.432-23.232-23.232V328.384c0-12.8 10.432-23.232 23.232-23.232h365.28c10.24 0 18.56-8.32 18.56-18.56v-38.4c0-10.24-8.32-18.56-18.56-18.56H168.608C105.28 229.632 54.4 280.512 54.4 343.808v291.904c0 63.296 50.88 114.176 114.176 114.176h478.72c63.296 0 114.176-50.88 114.176-114.176V417.184c0-10.24-8.32-18.56-18.56-18.56h-53.856z"></path>
             <path d="M932.192 303.36h-267.2c-10.24 0-18.56 8.32-18.56 18.56v38.4c0 10.24 8.32 18.56 18.56 18.56h267.2c12.8 0 23.232 10.432 23.232 23.232v223.168c0 12.8-10.432 23.232-23.232 23.232H791.424c-10.24 0-18.56 8.32-18.56 18.56v38.4c0 10.24 8.32 18.56 18.56 18.56h140.768c63.296 0 114.176-50.88 114.176-114.176V417.536c0-63.296-50.88-114.176-114.176-114.176z"></path>
             <path d="M639.744 654.368H297.312c-10.24 0-18.56-8.32-18.56-18.56v-38.4c0-10.24 8.32-18.56 18.56-18.56h342.432c10.24 0 18.56 8.32 18.56 18.56v38.4c0 10.24-8.32 18.56-18.56 18.56z"></path>
@@ -106,59 +116,21 @@
         <span>小程序</span>
     </div>
 
-    <!-- 手机端按钮 -->
-    <button class="btn" id="mobileBtn" onclick="openMiniProgram()">前往微信打开</button>
-    
-    <!-- 电脑端提示区（默认隐藏） -->
-    <div class="pc-tip" id="pcTip">
-        <div>请使用手机扫描下方二维码</div>
-        <div style="margin-top: 12px; font-size: 13px; color: #888;">
-            或复制链接到手机浏览器打开：<br>
-            <code id="pageUrl"></code>
-        </div>
-        <img src="https://i.postimg.cc/bJNn9WhB/qrcode-wx6b6c1b15ec6acb4e-customer-21891.jpg" 
-             alt="扫码打开" 
-             style="width: 160px; height: 160px; margin-top: 12px; border-radius: 4px;">
-    </div>
+    <!-- 蓝色按钮 -->
+    <button class="btn" onclick="openMiniProgram()">前往微信打开</button>
 
-    <p class="hint" id="hintText">
+    <!-- 底部提示 -->
+    <p class="hint">
         无法打开时，可使用默认浏览器打开。<br>
         <a href="javascript:void(0)" onclick="copyLink()">复制链接</a>
     </p>
 
     <script>
-        // 1. 检测是否为移动设备
-        var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent);
-
-        // 2. 根据设备类型切换显示
-        window.onload = function() {
-            var mobileBtn = document.getElementById('mobileBtn');
-            var pcTip = document.getElementById('pcTip');
-            var hintText = document.getElementById('hintText');
-            var pageUrl = document.getElementById('pageUrl');
-            
-            // 在电脑端显示当前页面链接，方便复制
-            pageUrl.innerText = window.location.href;
-
-            if (!isMobile) {
-                // 电脑端：隐藏跳转按钮，显示扫码提示
-                mobileBtn.style.display = 'none';
-                pcTip.style.display = 'block';
-                hintText.innerHTML = '请使用手机浏览器或微信扫码打开本页面';
-            } else {
-                // 手机端：保留按钮和原提示
-                pcTip.style.display = 'none';
-            }
-        };
-
-        // 3. 跳转微信（仅手机端有效）
         function openMiniProgram() {
-            if (!isMobile) {
-                alert("电脑端无法直接打开微信小程序，请使用手机扫码打开。");
-                return;
-            }
             var scheme = "weixin://dl/business/?appid=wxcc866a20987fe1ca&path=pages/index/index";
             window.location.href = scheme;
+
+            // 兜底提示
             setTimeout(function() {
                 if (!document.hidden) {
                     alert("跳转失败，请尝试：\n1. 使用手机自带浏览器打开本页\n2. 或直接长按上方二维码保存，再打开微信扫一扫从相册识别");
@@ -166,12 +138,11 @@
             }, 2000);
         }
 
-        // 4. 复制链接
         function copyLink() {
             var url = window.location.href;
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(url).then(function() {
-                    alert("链接已复制，可粘贴到手机浏览器或微信中打开");
+                    alert("链接已复制，可粘贴到微信中打开");
                 }, function() {
                     prompt("复制失败，请手动复制：", url);
                 });
