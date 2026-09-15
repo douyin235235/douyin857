@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>打开小程序</title>
+    <title>阿韬备忘工具助手</title>
     <style>
         * {
             box-sizing: border-box;
@@ -20,19 +20,28 @@
             min-height: 100vh;
             padding: 20px;
         }
+        /* 二维码白底小卡片 */
         .qrcode-box {
             background: #fff;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 12px;
+            border-radius: 8px;
             margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
         .qrcode-img {
             display: block;
-            width: 280px;
-            max-width: 80vw;
+            width: 160px;  /* 缩小图片尺寸 */
             height: auto;
         }
+        /* 红色标题 */
+        .title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #e60012;
+            margin-bottom: 40px;
+            letter-spacing: 1px;
+        }
+        /* 绿色按钮 */
         .btn {
             display: block;
             width: 280px;
@@ -52,38 +61,42 @@
         .btn:active {
             background-color: #06ad56;
         }
+        /* 底部提示文字 */
         .hint {
             margin-top: 16px;
             font-size: 13px;
-            color: #888;
+            color: #999;
             text-align: center;
         }
     </style>
 </head>
 <body>
 
-    <!-- 二维码图片展示区 -->
+    <!-- 二维码小图 -->
     <div class="qrcode-box">
         <img class="qrcode-img" 
              src="https://i.postimg.cc/bJNn9WhB/qrcode-wx6b6c1b15ec6acb4e-customer-21891.jpg" 
              alt="小程序码">
     </div>
 
-    <!-- 跳转按钮 -->
+    <!-- 红色标题 -->
+    <div class="title">阿韬备忘工具助手</div>
+
+    <!-- 绿色跳转按钮 -->
     <button class="btn" onclick="openMiniProgram()">点击打开小程序</button>
 
-    <!-- 提示文字 -->
+    <!-- 底部提示 -->
     <p class="hint">打开微信后，会自动跳转到小程序页面</p>
 
     <script>
         function openMiniProgram() {
-            // 这里使用你提供的 AppID，path 为小程序首页路径
+            // 使用你提供的 AppID
             var scheme = "weixin://dl/business/?appid=wxcc866a20987fe1ca&path=pages/index/index";
             
             // 触发跳转
             window.location.href = scheme;
 
-            // 兜底提示：如果 2 秒后页面还没被切走，说明跳转被拦截了
+            // 兜底提示
             setTimeout(function() {
                 if (!document.hidden) {
                     alert("跳转失败，请尝试：\n1. 使用手机自带浏览器打开本页\n2. 或直接长按上方二维码保存，再打开微信扫一扫从相册识别");
