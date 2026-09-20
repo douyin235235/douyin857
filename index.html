@@ -1,89 +1,74 @@
-<?php
-// === 配置区域 ===
-$max_visits = 3; // 最大允许访问次数
-$block_time = 86400; // 封禁时间（秒），这里设置的是24小时。如果不想解封，可以设置一个很大的数字，比如 31536000 (1年)
-$log_file = 'ip_logs.json'; // 记录IP的文件名
-
-// 获取用户真实IP（兼容CDN/代理情况）
-function getRealIP() {
-    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-        return $_SERVER['HTTP_CLIENT_IP'];
-    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-        // 如果有多个代理，取第一个
-        $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-        return trim($ips[0]);
-    } else {
-        return $_SERVER['REMOTE_ADDR'];
-    }
-}
-
-$ip = getRealIP();
-$current_time = time();
-
-// 读取日志文件
-$logs = [];
-if (file_exists($log_file)) {
-    $logs = json_decode(file_get_contents($log_file), true);
-    if (!is_array($logs)) $logs = [];
-}
-
-// 初始化当前IP的记录
-if (!isset($logs[$ip])) {
-    $logs[$ip] = [
-        'count' => 0,
-        'first_visit' => $current_time,
-        'blocked_until' => 0
-    ];
-}
-
-// 检查是否处于封禁期
-if ($logs[$ip]['blocked_until'] > $current_time) {
-    // 被封禁了
-    header('HTTP/1.1 403 Forbidden');
-    echo "<h1>访问被拒绝</h1><p>您的IP因访问过于频繁已被暂时封禁，请在 " . ceil(($logs[$ip]['blocked_until'] - $current_time) / 60) . " 分钟后重试。</p>";
-    exit;
-}
-
-// 如果封禁时间已过，重置计数
-if ($logs[$ip]['blocked_until'] > 0 && $logs[$ip]['blocked_until'] <= $current_time) {
-    $logs[$ip]['count'] = 0;
-    $logs[$ip]['blocked_until'] = 0;
-    $logs[$ip]['first_visit'] = $current_time;
-}
-
-// 增加访问次数
-$logs[$ip]['count']++;
-
-// 判断是否达到3次
-if ($logs[$ip]['count'] >= $max_visits) {
-    // 触发封禁
-    $logs[$ip]['blocked_until'] = $current_time + $block_time;
-    // 保存日志
-    file_put_contents($log_file, json_encode($logs));
-    
-    header('HTTP/1.1 403 Forbidden');
-    echo "<h1>访问被拒绝</h1><p>您的IP访问次数已达上限，已被封禁。</p>";
-    exit;
-}
-
-// 保存日志
-file_put_contents($log_file, json_encode($logs));
-
-// === 如果通过了检查，显示正常的页面 ===
-?>
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>请长按下方二维码查看</title>
+    <title>扫码领取</title>
     <style>
-        body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #f5f5f5; }
-        img { max-width: 100%; height: auto; display: block; }
+        body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #f5f5f5; font-family: sans-serif; }
+        .container { text-align: center; }
+        img { max-width: 100%; height: auto; display: block; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .blocked { color: red; font-size: 20px; font-weight: bold; padding: 20px; background: #fff; border-radius: 10px; border: 2px solid red; }
     </style>
 </head>
 <body>
-    <!-- 这里放你的图片链接 -->
-    <img src="https://i.postimg.cc/YCsgD2VQ/i-Phone-(14).jpg" alt="请长按下方二维码查看">
+
+<div class="container" id="app">
+    <!-- 默认显示的内容，JS 会决定是否隐藏 -->
+    <img id="qrImage" src="https://i.postimg.cc/YCsgD2VQ/i-Phone-(14).jpg" alt="扫码领取">
+    <div id="blockedMessage" class="blocked" style="display: none;">
+        ⚠️ 您的 IP 访问次数已达上限（3次），已被系统屏蔽。
+    </div>
+</div>
+
+<script>
+    // 获取用户公网 IP 的免费 API
+    const IP_API_URL = 'https://api.ipify.org?format=json';
+    
+    // 这里使用 localStorage 模拟记录（仅作为演示，真实情况必须用后端）
+    // 因为纯 HTML 无法记录服务器端的 IP 访问次数，这里只能记录当前浏览器的访问次数
+    // 如果你真的想记录 IP，必须接入后端，这里仅演示逻辑
+    
+    async function checkLimit() {
+        try {
+            // 1. 获取用户 IP
+            const response = await fetch(IP_API_URL);
+            const data = await response.json();
+            const userIp = data.ip;
+            
+            // 2. 生成一个基于 IP 的 key
+            const storageKey = 'visit_count_' + userIp;
+            
+            // 3. 获取当前访问次数
+            let visitCount = parseInt(localStorage.getItem(storageKey) || '0');
+            
+            // 4. 增加次数
+            visitCount++;
+            localStorage.setItem(storageKey, visitCount);
+            
+            console.log('当前 IP: ' + userIp + '，访问次数: ' + visitCount);
+            
+            // 5. 判断是否超过 3 次
+            if (visitCount > 3) {
+                // 隐藏图片，显示屏蔽信息
+                document.getElementById('qrImage').style.display = 'none';
+                document.getElementById('blockedMessage').style.display = 'block';
+            } else {
+                // 正常显示图片
+                document.getElementById('qrImage').style.display = 'block';
+                document.getElementById('blockedMessage').style.display = 'none';
+            }
+            
+        } catch (error) {
+            console.error('获取 IP 失败:', error);
+            // 如果获取 IP 失败，为了不影响用户体验，默认显示图片
+            document.getElementById('qrImage').style.display = 'block';
+        }
+    }
+
+    // 页面加载时执行检查
+    window.onload = checkLimit;
+</script>
+
 </body>
 </html>
