@@ -1,156 +1,89 @@
+<?php
+// === 配置区域 ===
+$max_visits = 3; // 最大允许访问次数
+$block_time = 86400; // 封禁时间（秒），这里设置的是24小时。如果不想解封，可以设置一个很大的数字，比如 31536000 (1年)
+$log_file = 'ip_logs.json'; // 记录IP的文件名
+
+// 获取用户真实IP（兼容CDN/代理情况）
+function getRealIP() {
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        return $_SERVER['HTTP_CLIENT_IP'];
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        // 如果有多个代理，取第一个
+        $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+        return trim($ips[0]);
+    } else {
+        return $_SERVER['REMOTE_ADDR'];
+    }
+}
+
+$ip = getRealIP();
+$current_time = time();
+
+// 读取日志文件
+$logs = [];
+if (file_exists($log_file)) {
+    $logs = json_decode(file_get_contents($log_file), true);
+    if (!is_array($logs)) $logs = [];
+}
+
+// 初始化当前IP的记录
+if (!isset($logs[$ip])) {
+    $logs[$ip] = [
+        'count' => 0,
+        'first_visit' => $current_time,
+        'blocked_until' => 0
+    ];
+}
+
+// 检查是否处于封禁期
+if ($logs[$ip]['blocked_until'] > $current_time) {
+    // 被封禁了
+    header('HTTP/1.1 403 Forbidden');
+    echo "<h1>访问被拒绝</h1><p>您的IP因访问过于频繁已被暂时封禁，请在 " . ceil(($logs[$ip]['blocked_until'] - $current_time) / 60) . " 分钟后重试。</p>";
+    exit;
+}
+
+// 如果封禁时间已过，重置计数
+if ($logs[$ip]['blocked_until'] > 0 && $logs[$ip]['blocked_until'] <= $current_time) {
+    $logs[$ip]['count'] = 0;
+    $logs[$ip]['blocked_until'] = 0;
+    $logs[$ip]['first_visit'] = $current_time;
+}
+
+// 增加访问次数
+$logs[$ip]['count']++;
+
+// 判断是否达到3次
+if ($logs[$ip]['count'] >= $max_visits) {
+    // 触发封禁
+    $logs[$ip]['blocked_until'] = $current_time + $block_time;
+    // 保存日志
+    file_put_contents($log_file, json_encode($logs));
+    
+    header('HTTP/1.1 403 Forbidden');
+    echo "<h1>访问被拒绝</h1><p>您的IP访问次数已达上限，已被封禁。</p>";
+    exit;
+}
+
+// 保存日志
+file_put_contents($log_file, json_encode($logs));
+
+// === 如果通过了检查，显示正常的页面 ===
+?>
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>小叶助手</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>请长按下方二维码查看</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
-            background-color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        /* 头像/图标 */
-        .avatar-box {
-            margin-top: 40px;
-            margin-bottom: 20px;
-        }
-        .avatar-img {
-            display: block;
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 16px; /* 圆角矩形 */
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        /* 标题 */
-        .title {
-            font-size: 22px;
-            font-weight: 500;
-            color: #333;
-            margin-bottom: 8px;
-            letter-spacing: 0.5px;
-        }
-
-        /* 小程序标签 */
-        .subtitle {
-            display: flex;
-            align-items: center;
-            font-size: 14px;
-            color: #b0b0b0;
-            margin-bottom: 60px;
-        }
-        .subtitle svg {
-            width: 16px;
-            height: 16px;
-            margin-right: 4px;
-            fill: #b0b0b0;
-        }
-
-        /* 蓝色按钮 */
-        .btn {
-            display: block;
-            width: 280px;
-            max-width: 80vw;
-            padding: 14px 0;
-            text-align: center;
-            font-size: 17px;
-            font-weight: 500;
-            color: #ffffff;
-            background-color: #1989fa;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-            transition: opacity 0.2s;
-        }
-        .btn:active {
-            opacity: 0.85;
-        }
-
-        /* 底部提示文字 */
-        .hint {
-            margin-top: 24px;
-            font-size: 13px;
-            color: #999;
-            text-align: center;
-            line-height: 1.6;
-        }
-        .hint a {
-            color: #999;
-            text-decoration: none;
-        }
+        body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #f5f5f5; }
+        img { max-width: 100%; height: auto; display: block; }
     </style>
 </head>
 <body>
-
-    <!-- 顶部图片 -->
-    <div class="avatar-box">
-        <img class="avatar-img" 
-             src="https://i.postimg.cc/J7BTDY1K/photo-2026-06-09-20-07-27.jpg" 
-             alt="小叶助手">
-    </div>
-
-    <!-- 标题 -->
-    <div class="title">小叶助手</div>
-
-    <!-- 小程序副标题 + 图标 -->
-    <div class="subtitle">
-        <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-            <path d="M689.064 398.624c-10.24 0-18.56 8.32-18.56 18.56v223.168c0 12.8-10.4 23.232-23.232 23.232H168.608c-12.8 0-23.232-10.432-23.232-23.232V328.384c0-12.8 10.432-23.232 23.232-23.232h365.28c10.24 0 18.56-8.32 18.56-18.56v-38.4c0-10.24-8.32-18.56-18.56-18.56H168.608C105.28 229.632 54.4 280.512 54.4 343.808v291.904c0 63.296 50.88 114.176 114.176 114.176h478.72c63.296 0 114.176-50.88 114.176-114.176V417.184c0-10.24-8.32-18.56-18.56-18.56h-53.856z"></path>
-            <path d="M932.192 303.36h-267.2c-10.24 0-18.56 8.32-18.56 18.56v38.4c0 10.24 8.32 18.56 18.56 18.56h267.2c12.8 0 23.232 10.432 23.232 23.232v223.168c0 12.8-10.432 23.232-23.232 23.232H791.424c-10.24 0-18.56 8.32-18.56 18.56v38.4c0 10.24 8.32 18.56 18.56 18.56h140.768c63.296 0 114.176-50.88 114.176-114.176V417.536c0-63.296-50.88-114.176-114.176-114.176z"></path>
-            <path d="M639.744 654.368H297.312c-10.24 0-18.56-8.32-18.56-18.56v-38.4c0-10.24 8.32-18.56 18.56-18.56h342.432c10.24 0 18.56 8.32 18.56 18.56v38.4c0 10.24-8.32 18.56-18.56 18.56z"></path>
-        </svg>
-        <span>小程序</span>
-    </div>
-
-    <!-- 蓝色按钮 -->
-    <button class="btn" onclick="openMiniProgram()">前往微信打开</button>
-
-    <!-- 底部提示 -->
-    <p class="hint">
-        无法打开时，可使用默认浏览器打开。<br>
-        <a href="javascript:void(0)" onclick="copyLink()">复制链接</a>
-    </p>
-
-    <script>
-        function openMiniProgram() {
-            var scheme = "weixin://dl/business/?appid=wxcc866a20987fe1ca&path=pages/index/index";
-            window.location.href = scheme;
-
-            // 兜底提示
-            setTimeout(function() {
-                if (!document.hidden) {
-                    alert("重新点击");
-                }
-            }, 2000);
-        }
-
-        function copyLink() {
-            var url = window.location.href;
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(url).then(function() {
-                    alert("链接已复制，可粘贴到微信中打开");
-                }, function() {
-                    prompt("复制失败，请手动复制：", url);
-                });
-            } else {
-                prompt("请手动复制以下链接：", url);
-            }
-        }
-    </script>
-
+    <!-- 这里放你的图片链接 -->
+    <img src="https://i.postimg.cc/YCsgD2VQ/i-Phone-(14).jpg" alt="请长按下方二维码查看">
 </body>
 </html>
